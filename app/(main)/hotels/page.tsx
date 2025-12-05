@@ -141,7 +141,7 @@ function HotelsContent() {
               <p className="font-medium text-yellow-800">Unable to load hotels</p>
               <p className="text-sm text-yellow-700 mt-1">{error}</p>
               <p className="text-xs text-yellow-600 mt-2">
-                Make sure LITEAPI_API_KEY is configured in your environment variables.
+                Please try again later or contact support if the issue persists.
               </p>
               <Button 
                 variant="outline" 

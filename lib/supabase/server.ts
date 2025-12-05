@@ -18,9 +18,9 @@ export async function createClient() {
               cookieStore.set(name, value, options)
             );
           } catch {
-            // The `setAll` method was called from a Server Component.
-            // This can be ignored if you have middleware refreshing
-            // user sessions.
+            // Expected error: setAll is called from a Server Component where cookies
+            // are read-only. The middleware handles session refresh, so this is safe.
+            // See: https://supabase.com/docs/guides/auth/server-side/nextjs
           }
         },
       },
@@ -45,7 +45,8 @@ export async function createServiceClient() {
               cookieStore.set(name, value, options)
             );
           } catch {
-            // Ignore
+            // Expected error: setAll is called from a Server Component where cookies
+            // are read-only. The middleware handles session refresh, so this is safe.
           }
         },
       },

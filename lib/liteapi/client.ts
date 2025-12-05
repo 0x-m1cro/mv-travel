@@ -60,10 +60,25 @@ class LiteApiClient {
   private apiKey: string;
   private maxRetries = 3;
   private retryDelay = 1000;
+  private isDevelopment = process.env.NODE_ENV === "development";
 
   constructor() {
     this.baseUrl = LITEAPI_BASE_URL;
     this.apiKey = LITEAPI_API_KEY;
+  }
+
+  // Safe logging - only in development
+  private log(message: string, ...args: unknown[]) {
+    if (this.isDevelopment) {
+      console.log(`[LiteAPI] ${message}`, ...args);
+    }
+  }
+
+  private logError(message: string, error?: unknown) {
+    if (this.isDevelopment) {
+      console.error(`[LiteAPI] ${message}`, error);
+    }
+    // In production, you would send to a logging service
   }
 
   private async request<T>(
@@ -83,12 +98,11 @@ class LiteApiClient {
 
     // Check if API key is configured
     if (!this.apiKey) {
-      console.error("LiteAPI API key not configured");
       return {
         success: false,
         error: {
           code: "CONFIG_ERROR",
-          message: "LiteAPI API key is not configured. Please set LITEAPI_API_KEY environment variable.",
+          message: "Hotel data service is not configured. Please contact support.",
         },
       };
     }
@@ -125,8 +139,8 @@ class LiteApiClient {
         return { success: true, data: data as T };
       } catch (error) {
         lastError = error as Error;
-        console.error(
-          `LiteAPI request failed (attempt ${attempt + 1}/${this.maxRetries}):`,
+        this.logError(
+          `Request failed (attempt ${attempt + 1}/${this.maxRetries})`,
           error
         );
 
@@ -526,7 +540,7 @@ class LiteApiClient {
           };
         }
       } catch (error) {
-        console.error("Error fetching rates:", error);
+        this.logError("Error fetching rates", error);
         // Continue without rates
       }
     }

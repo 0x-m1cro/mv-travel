@@ -1,15 +1,44 @@
 import { NextRequest, NextResponse } from "next/server";
+import crypto from "crypto";
+
+const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET || "";
+
+// Verify webhook signature
+function verifyWebhookSignature(payload: string, signature: string | null): boolean {
+  if (!WEBHOOK_SECRET || !signature) {
+    // In development without secret, log warning but allow
+    if (process.env.NODE_ENV === "development") {
+      return true;
+    }
+    return false;
+  }
+  
+  const expectedSignature = crypto
+    .createHmac("sha256", WEBHOOK_SECRET)
+    .update(payload)
+    .digest("hex");
+  
+  return crypto.timingSafeEqual(
+    Buffer.from(signature),
+    Buffer.from(expectedSignature)
+  );
+}
 
 // Webhook handler for booking confirmations
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    
-    // Verify webhook signature (implement based on LiteAPI webhook security)
+    const rawBody = await request.text();
     const signature = request.headers.get("x-webhook-signature");
     
-    // TODO: Implement signature verification when LiteAPI provides webhook security docs
-    console.log("Received webhook:", body.type, "Signature:", signature);
+    // Verify webhook signature for security
+    if (!verifyWebhookSignature(rawBody, signature)) {
+      return NextResponse.json(
+        { error: "Invalid webhook signature" },
+        { status: 401 }
+      );
+    }
+    
+    const body = JSON.parse(rawBody);
 
     // Handle different webhook events
     switch (body.type) {
@@ -23,12 +52,12 @@ export async function POST(request: NextRequest) {
         await handleBookingModified(body.data);
         break;
       default:
-        console.log("Unknown webhook type:", body.type);
+        // Unknown webhook type - acknowledge but don't process
+        break;
     }
 
     return NextResponse.json({ received: true });
-  } catch (error) {
-    console.error("Webhook error:", error);
+  } catch {
     return NextResponse.json(
       { error: "Webhook processing failed" },
       { status: 500 }
@@ -41,19 +70,19 @@ async function handleBookingConfirmed(data: Record<string, unknown>) {
   // - Send confirmation email via Supabase
   // - Update booking status in database
   // - Send account activation email if new user
-  console.log("Booking confirmed:", data);
+  void data; // Acknowledge parameter for future implementation
 }
 
 async function handleBookingCancelled(data: Record<string, unknown>) {
   // TODO: Implement booking cancellation logic
   // - Send cancellation email
   // - Process refund if applicable
-  console.log("Booking cancelled:", data);
+  void data; // Acknowledge parameter for future implementation
 }
 
 async function handleBookingModified(data: Record<string, unknown>) {
   // TODO: Implement booking modification logic
   // - Send modification confirmation email
   // - Update booking details
-  console.log("Booking modified:", data);
+  void data; // Acknowledge parameter for future implementation
 }
