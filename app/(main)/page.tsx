@@ -1,9 +1,9 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, Star, MapPin, Shield, Clock, Award, Sparkles, Heart } from "lucide-react";
+import { Star, MapPin, Shield, Clock, Award, Sparkles, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { SearchForm } from "@/components/search";
+import { HeroSection, RecommendedCarousel } from "@/components/travel";
 import { liteApiClient } from "@/lib/liteapi/client";
 import type { Hotel } from "@/lib/liteapi/types";
 
@@ -83,9 +83,9 @@ const features = [
 // Fetch featured hotels from LiteAPI
 async function getFeaturedHotels(): Promise<Hotel[]> {
   try {
-    const result = await liteApiClient.getMaldivesHotels({ limit: 6 });
+    const result = await liteApiClient.getMaldivesHotels({ limit: 8 });
     if (result.success && result.data?.hotels) {
-      return result.data.hotels.slice(0, 3);
+      return result.data.hotels.slice(0, 8);
     }
   } catch (error) {
     console.error("Error fetching featured hotels:", error);
@@ -99,58 +99,18 @@ export default async function HomePage() {
   
   return (
     <div className="flex flex-col">
-      {/* Hero Section */}
-      <section className="relative min-h-[85vh] flex items-center overflow-hidden">
-        <div className="absolute inset-0 z-0">
-          <Image
-            src="https://images.unsplash.com/photo-1514282401047-d79a71a590e8?w=1920"
-            alt="Maldives Paradise"
-            fill
-            className="object-cover scale-105"
-            priority
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-gray-900/80 via-gray-900/50 to-transparent" />
-          <div className="absolute inset-0 bg-gradient-to-t from-gray-900/60 via-transparent to-gray-900/20" />
-        </div>
-        
-        <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 w-full py-20">
-          <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 mb-6 animate-fade-in">
-              <Sparkles className="h-4 w-4 text-amber-400" />
-              <span className="text-sm text-white/90 font-medium">Discover Paradise</span>
-            </div>
-            <h1 className="font-stix text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight animate-slide-up">
-              Experience the Magic of{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-teal-400">
-                Maldives
-              </span>
-            </h1>
-            <p className="mt-6 text-lg md:text-xl text-white/85 max-w-xl animate-slide-up leading-relaxed">
-              Crystal-clear waters, pristine beaches, and world-class luxury resorts await you. 
-              Your dream tropical escape is just a click away.
-            </p>
-            <div className="mt-8 flex flex-wrap gap-4 animate-slide-up">
-              <Button size="xl" asChild className="gap-2 rounded-xl shadow-lg hover:shadow-xl bg-gradient-to-r from-primary to-cyan-500 border-0">
-                <Link href="/hotels">
-                  Explore Hotels
-                  <ArrowRight className="h-5 w-5" />
-                </Link>
-              </Button>
-              <Button size="xl" variant="outline" className="bg-white/10 text-white border-white/30 hover:bg-white/20 rounded-xl backdrop-blur-sm" asChild>
-                <Link href="/destinations">View Destinations</Link>
-              </Button>
-            </div>
-          </div>
-        </div>
-        
-        {/* Decorative elements */}
-        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white to-transparent z-10" />
-      </section>
+      {/* New Hero Section with integrated search card */}
+      <HeroSection />
 
-      {/* Search Form Section */}
-      <section className="relative z-20 -mt-20 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 w-full">
-        <SearchForm variant="hero" />
-      </section>
+      {/* Recommended Hotels Carousel */}
+      {featuredHotels.length > 0 && (
+        <RecommendedCarousel 
+          hotels={featuredHotels} 
+          title="Recommended for You"
+          subtitle="Hand-picked luxury accommodations"
+          className="bg-white"
+        />
+      )}
 
       {/* Features Section */}
       <section className="py-20 bg-gradient-to-b from-white to-gray-50/50">

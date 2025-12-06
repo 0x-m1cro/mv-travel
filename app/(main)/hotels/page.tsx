@@ -2,17 +2,11 @@
 
 import { useState, useEffect, useCallback, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { Grid, List, SlidersHorizontal, AlertCircle, Search } from "lucide-react";
+import { Grid, List, AlertCircle, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SearchForm, FilterSidebar, type Filters } from "@/components/search";
-import { HotelList } from "@/components/hotels";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { ListViewCard, FiltersSortBar, FloatingMapButton } from "@/components/travel";
+import { RecommendedCard } from "@/components/travel";
 import type { Hotel } from "@/lib/liteapi/types";
 
 function HotelsContent() {
@@ -24,6 +18,12 @@ function HotelsContent() {
   const [viewMode, setViewMode] = useState<"list" | "grid">("list");
   const [sortBy, setSortBy] = useState("recommended");
   const [showFilters, setShowFilters] = useState(false);
+  const [activeFilters, setActiveFilters] = useState<Filters>({
+    priceRange: [0, 5000],
+    starRating: [],
+    amenities: [],
+    boardType: [],
+  });
 
   const fetchHotels = useCallback(async () => {
     setIsLoading(true);
@@ -67,6 +67,7 @@ function HotelsContent() {
   }, [fetchHotels]);
 
   const handleFilterChange = useCallback((filters: Filters) => {
+    setActiveFilters(filters);
     let filtered = [...hotels];
 
     // Apply star rating filter
@@ -123,20 +124,29 @@ function HotelsContent() {
     setFilteredHotels(sorted);
   };
 
+  // Calculate active filters count based on selected filters
+  const getActiveFiltersCount = useCallback(() => {
+    return (
+      activeFilters.starRating.length +
+      activeFilters.amenities.length +
+      activeFilters.boardType.length
+    );
+  }, [activeFilters]);
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white pb-24 pt-[72px]">
       {/* Search Header */}
-      <div className="bg-white/80 backdrop-blur-lg border-b border-border/50 py-4 sticky top-[4.5rem] z-40 shadow-sm">
+      <div className="bg-white shadow-header border-b border-border/50 py-4 sticky top-[72px] z-40">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <SearchForm variant="compact" />
         </div>
       </div>
 
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
         {/* Error State */}
         {error && (
-          <div className="mb-6 p-5 bg-amber-50 border border-amber-200 rounded-2xl flex items-start gap-4 shadow-sm">
-            <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center flex-shrink-0">
+          <div className="mb-6 p-5 bg-amber-50 border border-amber-200 rounded-20 flex items-start gap-4 shadow-card">
+            <div className="w-10 h-10 rounded-12 bg-amber-100 flex items-center justify-center flex-shrink-0">
               <AlertCircle className="h-5 w-5 text-amber-600" />
             </div>
             <div className="flex-1">
@@ -148,7 +158,7 @@ function HotelsContent() {
               <Button 
                 variant="outline" 
                 size="sm" 
-                className="mt-4 rounded-xl border-amber-300 text-amber-700 hover:bg-amber-100"
+                className="mt-4 rounded-12 border-amber-300 text-amber-700 hover:bg-amber-100"
                 onClick={fetchHotels}
               >
                 Try Again
@@ -157,7 +167,7 @@ function HotelsContent() {
           </div>
         )}
 
-        <div className="flex gap-8">
+        <div className="flex gap-6">
           {/* Filters Sidebar */}
           <aside className={`w-full lg:w-72 flex-shrink-0 ${showFilters ? "block" : "hidden lg:block"}`}>
             <FilterSidebar onFilterChange={handleFilterChange} />
@@ -165,84 +175,91 @@ function HotelsContent() {
 
           {/* Results */}
           <div className="flex-1">
-            {/* Results Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-              <div>
-                <h1 className="font-stix text-2xl md:text-3xl font-bold text-gray-900">Hotels in Maldives</h1>
-                <p className="text-muted-foreground mt-1">
-                  {isLoading ? (
-                    <span className="flex items-center gap-2">
-                      <span className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></span>
-                      Loading properties...
-                    </span>
-                  ) : (
-                    `${filteredHotels.length} properties found`
-                  )}
-                </p>
-              </div>
-
-              <div className="flex items-center gap-3">
-                {/* Mobile Filter Toggle */}
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="lg:hidden rounded-xl border-2"
-                  onClick={() => setShowFilters(!showFilters)}
-                >
-                  <SlidersHorizontal className="h-4 w-4 mr-2" />
-                  Filters
-                </Button>
-
-                {/* Sort */}
-                <Select value={sortBy} onValueChange={handleSort}>
-                  <SelectTrigger className="w-48 h-10">
-                    <SelectValue placeholder="Sort by" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="recommended">Recommended</SelectItem>
-                    <SelectItem value="price-low">Price: Low to High</SelectItem>
-                    <SelectItem value="price-high">Price: High to Low</SelectItem>
-                    <SelectItem value="stars">Star Rating</SelectItem>
-                    <SelectItem value="rating">Guest Rating</SelectItem>
-                  </SelectContent>
-                </Select>
-
-                {/* View Toggle */}
-                <div className="hidden sm:flex items-center border-2 border-border/60 rounded-xl overflow-hidden">
-                  <Button
-                    variant={viewMode === "list" ? "secondary" : "ghost"}
-                    size="icon"
-                    className="rounded-none h-10 w-10"
-                    onClick={() => setViewMode("list")}
-                  >
-                    <List className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant={viewMode === "grid" ? "secondary" : "ghost"}
-                    size="icon"
-                    className="rounded-none h-10 w-10"
-                    onClick={() => setViewMode("grid")}
-                  >
-                    <Grid className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
+            {/* Page Title */}
+            <div className="mb-4">
+              <h1 className="font-stix text-2xl md:text-3xl font-bold text-foreground">Hotels in Maldives</h1>
             </div>
 
-            {/* Hotel List */}
-            <HotelList
-              hotels={filteredHotels}
-              isLoading={isLoading}
-              variant={viewMode === "grid" ? "grid" : "default"}
+            {/* Filter/Sort Bar */}
+            <FiltersSortBar
+              totalResults={filteredHotels.length}
+              sortBy={sortBy}
+              onSortChange={handleSort}
+              onFilterClick={() => setShowFilters(!showFilters)}
+              activeFiltersCount={getActiveFiltersCount()}
+              className="mb-6"
             />
+
+            {/* View Mode Toggle */}
+            <div className="flex items-center gap-2 mb-6">
+              <button
+                onClick={() => setViewMode("list")}
+                className={`flex items-center gap-2 px-4 py-2 rounded-12 text-sm font-medium transition-colors ${
+                  viewMode === "list" 
+                    ? "bg-primary text-white" 
+                    : "bg-white border-2 border-border hover:border-primary/50"
+                }`}
+              >
+                <List className="h-4 w-4" />
+                List
+              </button>
+              <button
+                onClick={() => setViewMode("grid")}
+                className={`flex items-center gap-2 px-4 py-2 rounded-12 text-sm font-medium transition-colors ${
+                  viewMode === "grid" 
+                    ? "bg-primary text-white" 
+                    : "bg-white border-2 border-border hover:border-primary/50"
+                }`}
+              >
+                <Grid className="h-4 w-4" />
+                Grid
+              </button>
+            </div>
+
+            {/* Loading State */}
+            {isLoading && (
+              <div className="space-y-4">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="bg-white rounded-20 shadow-card p-4 animate-pulse">
+                    <div className="flex flex-col sm:flex-row gap-4">
+                      <div className="w-full sm:w-48 h-40 bg-gray-200 rounded-16"></div>
+                      <div className="flex-1 space-y-3">
+                        <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+                        <div className="h-6 bg-gray-200 rounded w-3/4"></div>
+                        <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                        <div className="h-8 bg-gray-200 rounded w-24 mt-4"></div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Hotel List View */}
+            {!isLoading && viewMode === "list" && (
+              <div className="space-y-4">
+                {filteredHotels.map((hotel) => (
+                  <ListViewCard key={hotel.id} hotel={hotel} />
+                ))}
+              </div>
+            )}
+
+            {/* Hotel Grid View */}
+            {!isLoading && viewMode === "grid" && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {filteredHotels.map((hotel) => (
+                  <RecommendedCard key={hotel.id} hotel={hotel} />
+                ))}
+              </div>
+            )}
 
             {/* Empty State */}
             {!isLoading && !error && filteredHotels.length === 0 && (
-              <div className="text-center py-16 bg-white rounded-2xl border border-border/50 shadow-sm">
+              <div className="text-center py-16 bg-white rounded-20 border border-border/50 shadow-card">
                 <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
                   <Search className="h-8 w-8 text-gray-400" />
                 </div>
-                <h3 className="font-semibold text-lg text-gray-900 mb-2">No hotels found matching your criteria</h3>
+                <h3 className="font-semibold text-lg text-foreground mb-2">No hotels found matching your criteria</h3>
                 <p className="text-muted-foreground max-w-md mx-auto">
                   Try adjusting your filters or search for a different destination.
                 </p>
@@ -251,6 +268,13 @@ function HotelsContent() {
           </div>
         </div>
       </div>
+
+      {/* Floating Map Button */}
+      <FloatingMapButton 
+        onClick={() => {
+          // Map view feature - to be implemented with map integration
+        }}
+      />
     </div>
   );
 }

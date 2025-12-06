@@ -314,3 +314,251 @@ html {
   animation: shimmer 1.5s infinite;
   border-radius: var(--radius);
 }
+
+/* ============================================
+   CUSTOM UTILITIES FOR TRAVEL UI MOCK DESIGN
+   ============================================ */
+
+/* Custom shadows for pixel-perfect mock matching */
+.shadow-card {
+  box-shadow: 0 2px 12px 0 rgb(0 0 0 / 0.08), 0 1px 4px 0 rgb(0 0 0 / 0.04);
+}
+
+.shadow-card-hover {
+  box-shadow: 0 8px 24px 0 rgb(0 0 0 / 0.12), 0 4px 8px 0 rgb(0 0 0 / 0.06);
+}
+
+.shadow-header {
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.06), 0 1px 2px 0 rgb(0 0 0 / 0.04);
+}
+
+.shadow-search-card {
+  box-shadow: 0 4px 20px 0 rgb(0 0 0 / 0.15), 0 2px 8px 0 rgb(0 0 0 / 0.08);
+}
+
+.shadow-floating {
+  box-shadow: 0 4px 16px 0 rgb(0 0 0 / 0.16), 0 2px 6px 0 rgb(0 0 0 / 0.08);
+}
+
+/* Custom radii for different UI elements */
+.rounded-pill {
+  border-radius: 9999px;
+}
+
+.rounded-28 {
+  border-radius: 28px;
+}
+
+.rounded-32 {
+  border-radius: 32px;
+}
+
+.rounded-20 {
+  border-radius: 20px;
+}
+
+.rounded-16 {
+  border-radius: 16px;
+}
+
+.rounded-12 {
+  border-radius: 12px;
+}
+
+/* Navigation pill styles */
+.nav-pill {
+  padding: 8px 16px;
+  border-radius: 9999px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  background: hsl(var(--background) / 0.15);
+  color: white;
+  backdrop-filter: blur(4px);
+}
+
+.nav-pill:hover {
+  background: hsl(var(--background) / 0.25);
+}
+
+.nav-pill.active {
+  background: white;
+  color: hsl(var(--foreground));
+}
+
+/* Hero overlay gradient */
+.hero-overlay {
+  background: linear-gradient(to bottom, 
+    transparent 0%, 
+    rgb(0 0 0 / 0.2) 50%, 
+    rgb(0 0 0 / 0.6) 100%
+  );
+}
+
+/* Search card field styling */
+.search-field {
+  background: hsl(var(--muted) / 0.5);
+  border-radius: 12px;
+  padding: 12px 16px;
+  transition: all 0.2s ease;
+}
+
+.search-field:focus-within {
+  background: hsl(var(--muted) / 0.8);
+  box-shadow: 0 0 0 2px hsl(var(--primary) / 0.2);
+}
+
+/* Carousel controls */
+.carousel-control {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 2px 8px 0 rgb(0 0 0 / 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.carousel-control:hover {
+  box-shadow: 0 4px 12px 0 rgb(0 0 0 / 0.18);
+  transform: scale(1.05);
+}
+
+/* Floating map button */
+.floating-map-btn {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  background: hsl(var(--foreground));
+  color: white;
+  padding: 12px 24px;
+  border-radius: 9999px;
+  font-weight: 600;
+  font-size: 14px;
+  box-shadow: 0 4px 16px 0 rgb(0 0 0 / 0.2);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.floating-map-btn:hover {
+  transform: translateX(-50%) translateY(-2px);
+  box-shadow: 0 6px 20px 0 rgb(0 0 0 / 0.25);
+}
+
+/* Filter badge count */
+.filter-badge {
+  background: hsl(var(--primary));
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px;
+}
+
+/* Sort/filter bar styling */
+.filter-bar {
+  background: white;
+  padding: 12px 16px;
+  border-radius: 16px;
+  box-shadow: 0 1px 4px 0 rgb(0 0 0 / 0.06);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Hotel card badge */
+.hotel-badge {
+  background: hsl(var(--success));
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Price tag styling */
+.price-tag {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  color: hsl(var(--foreground));
+}
+
+.price-tag-small {
+  font-weight: 400;
+  font-size: 12px;
+  color: hsl(var(--muted-foreground));
+}
+
+/* Rating badge */
+.rating-badge {
+  background: hsl(45 93% 47%);
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Amenity tag */
+.amenity-tag {
+  background: hsl(var(--muted));
+  color: hsl(var(--muted-foreground));
+  font-size: 12px;
+  font-weight: 500;
+  padding: 6px 10px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Custom scrollbar for horizontal scroll */
+.scroll-hidden::-webkit-scrollbar {
+  display: none;
+}
+
+.scroll-hidden {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Card image aspect ratios */
+.aspect-card {
+  aspect-ratio: 4/3;
+}
+
+.aspect-hotel {
+  aspect-ratio: 16/10;
+}
+
+/* Login button in header */
+.login-btn {
+  padding: 8px 20px;
+  border-radius: 9999px;
+  font-size: 14px;
+  font-weight: 500;
+  background: white;
+  color: hsl(var(--foreground));
+  transition: all 0.2s ease;
+}
+
+.login-btn:hover {
+  background: hsl(var(--muted));
+}
