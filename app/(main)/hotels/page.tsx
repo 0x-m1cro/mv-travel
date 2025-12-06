@@ -126,7 +126,7 @@ function HotelsContent() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
       {/* Search Header */}
-      <div className="bg-white/80 backdrop-blur-lg border-b border-border/50 py-4 sticky top-18 z-40 shadow-sm">
+      <div className="bg-white/80 backdrop-blur-lg border-b border-border/50 py-4 sticky top-[4.5rem] z-40 shadow-sm">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <SearchForm variant="compact" />
         </div>
@@ -260,7 +260,7 @@ export default function HotelsPage() {
     <Suspense fallback={
       <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white flex items-center justify-center">
         <div className="text-center">
-          <div className="w-12 h-12 border-3 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="w-12 h-12 border-[3px] border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-muted-foreground">Loading hotels...</p>
         </div>
       </div>

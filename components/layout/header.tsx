@@ -36,7 +36,7 @@ export function Header() {
       )}
     >
       <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-18 items-center justify-between py-3">
+        <div className="flex h-[4.5rem] items-center justify-between py-3">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group">
             <div className="relative">
