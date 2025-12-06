@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { Grid, List, SlidersHorizontal, AlertCircle } from "lucide-react";
+import { Grid, List, SlidersHorizontal, AlertCircle, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SearchForm, FilterSidebar, type Filters } from "@/components/search";
 import { HotelList } from "@/components/hotels";
@@ -124,9 +124,9 @@ function HotelsContent() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
       {/* Search Header */}
-      <div className="bg-white border-b py-4 sticky top-16 z-40">
+      <div className="bg-white/80 backdrop-blur-lg border-b border-border/50 py-4 sticky top-[4.5rem] z-40 shadow-sm">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <SearchForm variant="compact" />
         </div>
@@ -135,18 +135,20 @@ function HotelsContent() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
         {/* Error State */}
         {error && (
-          <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg flex items-start gap-3">
-            <AlertCircle className="h-5 w-5 text-yellow-600 flex-shrink-0 mt-0.5" />
-            <div>
-              <p className="font-medium text-yellow-800">Unable to load hotels</p>
-              <p className="text-sm text-yellow-700 mt-1">{error}</p>
-              <p className="text-xs text-yellow-600 mt-2">
+          <div className="mb-6 p-5 bg-amber-50 border border-amber-200 rounded-2xl flex items-start gap-4 shadow-sm">
+            <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center flex-shrink-0">
+              <AlertCircle className="h-5 w-5 text-amber-600" />
+            </div>
+            <div className="flex-1">
+              <p className="font-semibold text-amber-800">Unable to load hotels</p>
+              <p className="text-sm text-amber-700 mt-1">{error}</p>
+              <p className="text-xs text-amber-600 mt-2">
                 Please try again later or contact support if the issue persists.
               </p>
               <Button 
                 variant="outline" 
                 size="sm" 
-                className="mt-3"
+                className="mt-4 rounded-xl border-amber-300 text-amber-700 hover:bg-amber-100"
                 onClick={fetchHotels}
               >
                 Try Again
@@ -164,20 +166,27 @@ function HotelsContent() {
           {/* Results */}
           <div className="flex-1">
             {/* Results Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
               <div>
-                <h1 className="font-stix text-2xl font-bold">Hotels in Maldives</h1>
-                <p className="text-muted-foreground">
-                  {isLoading ? "Loading..." : `${filteredHotels.length} properties found`}
+                <h1 className="font-stix text-2xl md:text-3xl font-bold text-gray-900">Hotels in Maldives</h1>
+                <p className="text-muted-foreground mt-1">
+                  {isLoading ? (
+                    <span className="flex items-center gap-2">
+                      <span className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></span>
+                      Loading properties...
+                    </span>
+                  ) : (
+                    `${filteredHotels.length} properties found`
+                  )}
                 </p>
               </div>
 
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3">
                 {/* Mobile Filter Toggle */}
                 <Button
                   variant="outline"
                   size="sm"
-                  className="lg:hidden"
+                  className="lg:hidden rounded-xl border-2"
                   onClick={() => setShowFilters(!showFilters)}
                 >
                   <SlidersHorizontal className="h-4 w-4 mr-2" />
@@ -186,7 +195,7 @@ function HotelsContent() {
 
                 {/* Sort */}
                 <Select value={sortBy} onValueChange={handleSort}>
-                  <SelectTrigger className="w-44">
+                  <SelectTrigger className="w-48 h-10">
                     <SelectValue placeholder="Sort by" />
                   </SelectTrigger>
                   <SelectContent>
@@ -199,11 +208,11 @@ function HotelsContent() {
                 </Select>
 
                 {/* View Toggle */}
-                <div className="hidden sm:flex items-center border rounded-md">
+                <div className="hidden sm:flex items-center border-2 border-border/60 rounded-xl overflow-hidden">
                   <Button
                     variant={viewMode === "list" ? "secondary" : "ghost"}
                     size="icon"
-                    className="rounded-r-none"
+                    className="rounded-none h-10 w-10"
                     onClick={() => setViewMode("list")}
                   >
                     <List className="h-4 w-4" />
@@ -211,7 +220,7 @@ function HotelsContent() {
                   <Button
                     variant={viewMode === "grid" ? "secondary" : "ghost"}
                     size="icon"
-                    className="rounded-l-none"
+                    className="rounded-none h-10 w-10"
                     onClick={() => setViewMode("grid")}
                   >
                     <Grid className="h-4 w-4" />
@@ -226,6 +235,19 @@ function HotelsContent() {
               isLoading={isLoading}
               variant={viewMode === "grid" ? "grid" : "default"}
             />
+
+            {/* Empty State */}
+            {!isLoading && !error && filteredHotels.length === 0 && (
+              <div className="text-center py-16 bg-white rounded-2xl border border-border/50 shadow-sm">
+                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
+                  <Search className="h-8 w-8 text-gray-400" />
+                </div>
+                <h3 className="font-semibold text-lg text-gray-900 mb-2">No hotels found matching your criteria</h3>
+                <p className="text-muted-foreground max-w-md mx-auto">
+                  Try adjusting your filters or search for a different destination.
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -235,7 +257,14 @@ function HotelsContent() {
 
 export default function HotelsPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-gray-50 flex items-center justify-center">Loading...</div>}>
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border-[3px] border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading hotels...</p>
+        </div>
+      </div>
+    }>
       <HotelsContent />
     </Suspense>
   );
