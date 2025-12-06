@@ -114,15 +114,18 @@ export function ListViewCard({ hotel, className }: ListViewCardProps) {
               {hotel.address?.city && (
                 <div className="flex items-center gap-1 text-muted-foreground text-sm mb-3">
                   <MapPin className="h-3.5 w-3.5" />
-                  <span className="line-clamp-1">{hotel.address.city}, Maldives</span>
+                  <span className="line-clamp-1">
+                    {hotel.address.city}
+                    {hotel.address.country && `, ${hotel.address.country}`}
+                  </span>
                 </div>
               )}
 
               {/* Amenities */}
               {hotel.amenities && hotel.amenities.length > 0 && (
                 <div className="flex flex-wrap gap-2 mb-3">
-                  {hotel.amenities.slice(0, 4).map((amenity, index) => (
-                    <span key={index} className="amenity-tag">
+                  {hotel.amenities.slice(0, 4).map((amenity) => (
+                    <span key={`amenity-${amenity}`} className="amenity-tag">
                       {amenityIcons[amenity.toLowerCase()] || <Check className="h-3.5 w-3.5" />}
                       <span className="capitalize">{amenity}</span>
                     </span>

@@ -18,6 +18,12 @@ function HotelsContent() {
   const [viewMode, setViewMode] = useState<"list" | "grid">("list");
   const [sortBy, setSortBy] = useState("recommended");
   const [showFilters, setShowFilters] = useState(false);
+  const [activeFilters, setActiveFilters] = useState<Filters>({
+    priceRange: [0, 5000],
+    starRating: [],
+    amenities: [],
+    boardType: [],
+  });
 
   const fetchHotels = useCallback(async () => {
     setIsLoading(true);
@@ -61,6 +67,7 @@ function HotelsContent() {
   }, [fetchHotels]);
 
   const handleFilterChange = useCallback((filters: Filters) => {
+    setActiveFilters(filters);
     let filtered = [...hotels];
 
     // Apply star rating filter
@@ -117,11 +124,14 @@ function HotelsContent() {
     setFilteredHotels(sorted);
   };
 
-  // Calculate active filters count
+  // Calculate active filters count based on selected filters
   const getActiveFiltersCount = useCallback(() => {
-    // This is a placeholder - in real implementation, track filters state
-    return 0;
-  }, []);
+    return (
+      activeFilters.starRating.length +
+      activeFilters.amenities.length +
+      activeFilters.boardType.length
+    );
+  }, [activeFilters]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white pb-24 pt-[72px]">
@@ -262,8 +272,7 @@ function HotelsContent() {
       {/* Floating Map Button */}
       <FloatingMapButton 
         onClick={() => {
-          // TODO: Implement map view
-          console.log("Open map view");
+          // Map view feature - to be implemented with map integration
         }}
       />
     </div>
