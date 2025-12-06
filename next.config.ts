@@ -13,6 +13,10 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'static.cupid.travel',
+      },
+      {
+        protocol: 'https',
         hostname: 'photos.hotelbeds.com',
       },
       {
@@ -22,22 +26,6 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'lh3.googleusercontent.com',
-      },
-      {
-        protocol: 'https',
-        hostname: '*.booking.com',
-      },
-      {
-        protocol: 'https',
-        hostname: '*.expedia.com',
-      },
-      {
-        protocol: 'https',
-        hostname: '*.hotels.com',
-      },
-      {
-        protocol: 'https',
-        hostname: '*.trvl-media.com',
       },
       {
         protocol: 'https',
