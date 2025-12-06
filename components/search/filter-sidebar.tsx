@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Sliders, Star, Check } from "lucide-react";
+import { Sliders, Star, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
@@ -77,150 +77,170 @@ export function FilterSidebar({ onFilterChange, className }: FilterSidebarProps)
     onFilterChange?.(defaultFilters);
   };
 
+  const activeFiltersCount = filters.starRating.length + filters.amenities.length + filters.boardType.length;
+
   return (
-    <div className={cn("bg-white rounded-xl shadow-sm border p-4", className)}>
+    <div className={cn("bg-white rounded-2xl shadow-lg border border-border/50 p-5", className)}>
       {/* Mobile Toggle */}
       <div className="lg:hidden">
         <Button
           variant="outline"
-          className="w-full justify-between"
+          className="w-full justify-between rounded-xl h-12 border-2"
           onClick={() => setIsExpanded(!isExpanded)}
         >
           <span className="flex items-center gap-2">
-            <Sliders className="h-4 w-4" />
-            Filters
+            <Sliders className="h-4 w-4 text-primary" />
+            <span className="font-medium">Filters</span>
           </span>
-          <span className="text-xs text-muted-foreground">
-            {filters.starRating.length + filters.amenities.length + filters.boardType.length} selected
-          </span>
+          {activeFiltersCount > 0 && (
+            <span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-medium">
+              {activeFiltersCount}
+            </span>
+          )}
         </Button>
       </div>
 
-      <div className={cn("space-y-6", !isExpanded && "hidden lg:block", "lg:mt-0 mt-4")}>
+      <div className={cn("space-y-6", !isExpanded && "hidden lg:block", "lg:mt-0 mt-5")}>
         {/* Header */}
         <div className="flex items-center justify-between">
-          <h3 className="font-semibold text-lg">Filters</h3>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={clearFilters}
-            className="text-xs text-muted-foreground"
-          >
-            Clear all
-          </Button>
+          <h3 className="font-semibold text-lg text-gray-900">Filters</h3>
+          {activeFiltersCount > 0 && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={clearFilters}
+              className="text-xs text-muted-foreground hover:text-destructive rounded-lg"
+            >
+              <X className="h-3 w-3 mr-1" />
+              Clear all
+            </Button>
+          )}
         </div>
 
-        <Separator />
+        <Separator className="bg-border/60" />
 
         {/* Star Rating */}
-        <div className="space-y-3">
-          <Label className="text-sm font-medium">Star Rating</Label>
+        <div className="space-y-4">
+          <Label className="text-sm font-semibold text-gray-900">Star Rating</Label>
           <div className="flex flex-wrap gap-2">
             {[5, 4, 3, 2, 1].map((stars) => (
               <Button
                 key={stars}
                 variant={filters.starRating.includes(stars) ? "default" : "outline"}
                 size="sm"
-                className="gap-1"
+                className={cn(
+                  "gap-1 rounded-xl transition-all",
+                  filters.starRating.includes(stars) 
+                    ? "shadow-md" 
+                    : "border-2 hover:border-primary/50"
+                )}
                 onClick={() => toggleArrayFilter("starRating", stars)}
               >
                 {stars}
-                <Star className="h-3 w-3 fill-current" />
+                <Star className={cn(
+                  "h-3.5 w-3.5",
+                  filters.starRating.includes(stars) ? "fill-white text-white" : "fill-amber-400 text-amber-400"
+                )} />
               </Button>
             ))}
           </div>
         </div>
 
-        <Separator />
+        <Separator className="bg-border/60" />
 
         {/* Price Range */}
-        <div className="space-y-3">
-          <Label className="text-sm font-medium">Price per night</Label>
-          <div className="flex items-center gap-2">
-            <input
-              type="number"
-              value={filters.priceRange[0]}
-              onChange={(e) =>
-                updateFilter("priceRange", [
-                  parseInt(e.target.value) || 0,
-                  filters.priceRange[1],
-                ])
-              }
-              className="w-20 h-9 px-2 text-sm border rounded-md"
-              placeholder="Min"
-            />
-            <span className="text-muted-foreground">-</span>
-            <input
-              type="number"
-              value={filters.priceRange[1]}
-              onChange={(e) =>
-                updateFilter("priceRange", [
-                  filters.priceRange[0],
-                  parseInt(e.target.value) || 5000,
-                ])
-              }
-              className="w-20 h-9 px-2 text-sm border rounded-md"
-              placeholder="Max"
-            />
-            <span className="text-sm text-muted-foreground">USD</span>
+        <div className="space-y-4">
+          <Label className="text-sm font-semibold text-gray-900">Price per night</Label>
+          <div className="flex items-center gap-3">
+            <div className="relative flex-1">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">$</span>
+              <input
+                type="number"
+                value={filters.priceRange[0]}
+                onChange={(e) =>
+                  updateFilter("priceRange", [
+                    parseInt(e.target.value) || 0,
+                    filters.priceRange[1],
+                  ])
+                }
+                className="w-full h-10 pl-7 pr-3 text-sm border-2 rounded-xl transition-colors focus:outline-none focus:border-primary hover:border-primary/50"
+                placeholder="Min"
+              />
+            </div>
+            <span className="text-muted-foreground font-medium">—</span>
+            <div className="relative flex-1">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">$</span>
+              <input
+                type="number"
+                value={filters.priceRange[1]}
+                onChange={(e) =>
+                  updateFilter("priceRange", [
+                    filters.priceRange[0],
+                    parseInt(e.target.value) || 5000,
+                  ])
+                }
+                className="w-full h-10 pl-7 pr-3 text-sm border-2 rounded-xl transition-colors focus:outline-none focus:border-primary hover:border-primary/50"
+                placeholder="Max"
+              />
+            </div>
           </div>
         </div>
 
-        <Separator />
+        <Separator className="bg-border/60" />
 
         {/* Board Type */}
-        <div className="space-y-3">
-          <Label className="text-sm font-medium">Board Type</Label>
+        <div className="space-y-4">
+          <Label className="text-sm font-semibold text-gray-900">Board Type</Label>
           <div className="space-y-2">
             {boardTypes.map((board) => (
               <label
                 key={board.value}
-                className="flex items-center gap-3 cursor-pointer"
+                className="flex items-center gap-3 cursor-pointer group py-1"
               >
                 <div
                   className={cn(
-                    "h-4 w-4 rounded border flex items-center justify-center",
+                    "h-5 w-5 rounded-md border-2 flex items-center justify-center transition-all duration-200",
                     filters.boardType.includes(board.value)
                       ? "bg-primary border-primary"
-                      : "border-gray-300"
+                      : "border-gray-300 group-hover:border-primary/50"
                   )}
                   onClick={() => toggleArrayFilter("boardType", board.value)}
                 >
                   {filters.boardType.includes(board.value) && (
-                    <Check className="h-3 w-3 text-white" />
+                    <Check className="h-3.5 w-3.5 text-white" />
                   )}
                 </div>
-                <span className="text-sm">{board.label}</span>
+                <span className="text-sm text-gray-700 group-hover:text-gray-900 transition-colors">{board.label}</span>
               </label>
             ))}
           </div>
         </div>
 
-        <Separator />
+        <Separator className="bg-border/60" />
 
         {/* Amenities */}
-        <div className="space-y-3">
-          <Label className="text-sm font-medium">Amenities</Label>
+        <div className="space-y-4">
+          <Label className="text-sm font-semibold text-gray-900">Amenities</Label>
           <div className="grid grid-cols-2 gap-2">
             {amenitiesList.map((amenity) => (
               <label
                 key={amenity}
-                className="flex items-center gap-2 cursor-pointer"
+                className="flex items-center gap-2 cursor-pointer group py-1"
               >
                 <div
                   className={cn(
-                    "h-4 w-4 rounded border flex items-center justify-center",
+                    "h-5 w-5 rounded-md border-2 flex items-center justify-center transition-all duration-200",
                     filters.amenities.includes(amenity)
                       ? "bg-primary border-primary"
-                      : "border-gray-300"
+                      : "border-gray-300 group-hover:border-primary/50"
                   )}
                   onClick={() => toggleArrayFilter("amenities", amenity)}
                 >
                   {filters.amenities.includes(amenity) && (
-                    <Check className="h-3 w-3 text-white" />
+                    <Check className="h-3.5 w-3.5 text-white" />
                   )}
                 </div>
-                <span className="text-xs">{amenity}</span>
+                <span className="text-xs text-gray-700 group-hover:text-gray-900 transition-colors">{amenity}</span>
               </label>
             ))}
           </div>
