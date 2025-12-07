@@ -1,7 +1,6 @@
 // Wishlist-related types for the Maldives OTA application
 
 export interface WishlistItem {
-  id: string; // Hotel ID
   hotelId: string;
   hotelName: string;
   starRating: number;

@@ -1,14 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { WishlistItem } from "@/types";
-
-interface WishlistState {
-  items: WishlistItem[];
-  addItem: (item: Omit<WishlistItem, "addedAt">) => void;
-  removeItem: (hotelId: string) => void;
-  isInWishlist: (hotelId: string) => boolean;
-  clearWishlist: () => void;
-}
+import { WishlistItem, WishlistState } from "@/types";
 
 export const useWishlistStore = create<WishlistState>()(
   persist(

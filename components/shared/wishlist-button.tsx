@@ -56,7 +56,6 @@ export function WishlistButton({
       removeItem(hotelId);
     } else {
       addItem({
-        id: hotelId,
         hotelId,
         hotelName,
         starRating,

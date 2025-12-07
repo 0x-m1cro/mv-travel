@@ -73,7 +73,7 @@ export default function WishlistPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {items.map((item) => (
               <Card
-                key={item.id}
+                key={item.hotelId}
                 className="overflow-hidden hover:shadow-2xl transition-all duration-500 group border-0 shadow-lg relative"
               >
                 {/* Remove Button */}

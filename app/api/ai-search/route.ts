@@ -54,10 +54,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Apply price range filter if AI suggested it
-    if (vibeResult.priceRange) {
+    if (vibeResult.priceRange && Array.isArray(vibeResult.priceRange)) {
+      const [min, max] = vibeResult.priceRange;
       filteredHotels = filteredHotels.filter((hotel) => {
         if (!hotel.minRate) return true;
-        const [min, max] = vibeResult.priceRange!;
         return hotel.minRate.amount >= min && hotel.minRate.amount <= max;
       });
     }

@@ -146,7 +146,7 @@ export function SearchForm({ className, variant = "default" }: SearchFormProps) 
               />
             </div>
             <p className="text-xs text-muted-foreground">
-              Try: &quot;luxury resort with spa&quot;, &quot;budget-friendly beach villa&quot;, &quot;honeymoon suite with private pool&quot;
+              Try: "luxury resort with spa", "budget-friendly beach villa", "honeymoon suite with private pool"
             </p>
           </div>
           
