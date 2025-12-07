@@ -93,6 +93,16 @@ async function getFeaturedHotels(): Promise<Hotel[]> {
   return [];
 }
 
+// Popular themes/tags
+const popularThemes = [
+  { name: "Honeymoon", emoji: "💑", query: "romantic honeymoon villa private pool" },
+  { name: "All-Inclusive", emoji: "🍽️", query: "all-inclusive luxury resort" },
+  { name: "Water Villa", emoji: "🌊", query: "overwater villa with glass floor" },
+  { name: "Private Island", emoji: "🏝️", query: "private island exclusive resort" },
+  { name: "Family-Friendly", emoji: "👨‍👩‍👧‍👦", query: "family friendly resort kids club" },
+  { name: "Diving & Snorkeling", emoji: "🤿", query: "diving snorkeling water sports" },
+];
+
 export default async function HomePage() {
   // Fetch featured hotels from LiteAPI
   const featuredHotels = await getFeaturedHotels();
@@ -101,6 +111,38 @@ export default async function HomePage() {
     <div className="flex flex-col">
       {/* New Hero Section with integrated search card */}
       <HeroSection />
+
+      {/* Popular Themes Section */}
+      <section className="py-16 bg-white border-b border-border/30">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-8">
+            <h2 className="font-stix text-2xl md:text-3xl font-bold text-gray-900">
+              Popular Themes
+            </h2>
+            <p className="mt-2 text-muted-foreground">
+              Quick search by vacation style
+            </p>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            {popularThemes.map((theme) => (
+              <Link
+                key={theme.name}
+                href={`/hotels?mode=vibe&q=${encodeURIComponent(theme.query)}`}
+                className="group"
+              >
+                <div className="bg-gradient-to-br from-gray-50 to-white p-6 rounded-2xl border-2 border-border/50 hover:border-primary hover:shadow-lg transition-all duration-300 text-center">
+                  <div className="text-4xl mb-3 group-hover:scale-110 transition-transform">
+                    {theme.emoji}
+                  </div>
+                  <h3 className="font-semibold text-sm text-gray-900 group-hover:text-primary transition-colors">
+                    {theme.name}
+                  </h3>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* Recommended Hotels Carousel */}
       {featuredHotels.length > 0 && (

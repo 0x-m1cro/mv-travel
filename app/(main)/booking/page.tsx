@@ -1,19 +1,23 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { ChevronLeft, User, Mail, Phone, CreditCard, Lock } from "lucide-react";
+import { ChevronLeft, User, Mail, Phone, CreditCard, Lock, ShieldCheck, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { usePrebookStore } from "@/store";
 
 function BookingContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
+  const [isPrebooking, setIsPrebooking] = useState(false);
+  const [prebookError, setPrebookError] = useState<string | null>(null);
+  const { prebookData, setPrebookData, isExpired } = usePrebookStore();
 
   const hotelId = searchParams.get("hotelId") || "";
   const offerId = searchParams.get("offerId") || "";
@@ -30,12 +34,12 @@ function BookingContent() {
   };
 
   const nights = calculateNights();
-  const pricePerNight = 1500; // Would come from prebook API in production
+  const pricePerNight = prebookData?.offer?.price?.amount || 1500;
   const taxes = Math.round(pricePerNight * nights * 0.05);
   const total = pricePerNight * nights + taxes;
 
   const bookingDetails = {
-    hotelName: "Maldives Resort",
+    hotelName: prebookData?.offer?.hotelId || "Maldives Resort",
     roomName: "Beach Villa",
     checkIn: checkIn || "Dec 15, 2024",
     checkOut: checkOut || "Dec 20, 2024",
@@ -46,25 +50,90 @@ function BookingContent() {
     total,
   };
 
+  // Prebook the offer when component mounts
+  useEffect(() => {
+    const performPrebook = async () => {
+      if (!offerId) return;
+      
+      // Skip if we already have valid prebook data
+      if (prebookData && !isExpired()) {
+        return;
+      }
+
+      setIsPrebooking(true);
+      setPrebookError(null);
+
+      try {
+        const response = await fetch("/api/book", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            offerId,
+            usePaymentSdk: false,
+          }),
+        });
+
+        const result = await response.json();
+        
+        if (result.success && result.data?.data) {
+          setPrebookData({
+            prebookId: result.data.data.prebookId,
+            secretKey: result.data.data.secretKey || "",
+            expiresAt: new Date(Date.now() + 10 * 60 * 1000).toISOString(), // 10 min expiry
+            offer: {
+              offerId,
+              hotelId,
+              roomId: "",
+              price: { amount: pricePerNight, currency: "USD" },
+              cancellationPolicy: {
+                refundable: true,
+              },
+            },
+          });
+        } else {
+          setPrebookError(result.error?.message || "Failed to reserve this rate");
+        }
+      } catch (error) {
+        console.error("Prebook error:", error);
+        setPrebookError("Unable to reserve this rate. Please try again.");
+      } finally {
+        setIsPrebooking(false);
+      }
+    };
+
+    performPrebook();
+  }, [offerId, hotelId, pricePerNight, prebookData, isExpired, setPrebookData]);
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
 
     try {
-      // In production, this calls the booking API with the prebookId
       const formData = new FormData(e.currentTarget);
+      
+      // Use prebookId from store if available
+      const bookingData = prebookData?.prebookId ? {
+        prebookId: prebookData.prebookId,
+        guestInfo: {
+          firstName: formData.get("firstName"),
+          lastName: formData.get("lastName"),
+          email: formData.get("email"),
+          phone: formData.get("phone"),
+        },
+      } : {
+        offerId,
+        guestInfo: {
+          firstName: formData.get("firstName"),
+          lastName: formData.get("lastName"),
+          email: formData.get("email"),
+          phone: formData.get("phone"),
+        },
+      };
+
       const response = await fetch("/api/book", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          offerId,
-          guestInfo: {
-            firstName: formData.get("firstName"),
-            lastName: formData.get("lastName"),
-            email: formData.get("email"),
-            phone: formData.get("phone"),
-          },
-        }),
+        body: JSON.stringify(bookingData),
       });
       
       const result = await response.json();
@@ -77,6 +146,8 @@ function BookingContent() {
     } catch {
       // For demo purposes, redirect to confirmation
       router.push("/booking/confirmation?bookingId=DEMO123");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -95,7 +166,45 @@ function BookingContent() {
       </div>
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
-        <h1 className="font-stix text-3xl font-bold mb-8">Complete Your Booking</h1>
+        <h1 className="font-stix text-3xl font-bold mb-4">Complete Your Booking</h1>
+
+        {/* Prebook Status Banner */}
+        {isPrebooking && (
+          <Card className="mb-6 border-blue-200 bg-blue-50">
+            <CardContent className="pt-6">
+              <div className="flex items-center gap-3">
+                <Loader2 className="h-5 w-5 animate-spin text-blue-600" />
+                <div>
+                  <p className="font-medium text-blue-900">Reserving your rate...</p>
+                  <p className="text-sm text-blue-700">Please wait while we secure this offer for you.</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {prebookError && (
+          <Card className="mb-6 border-red-200 bg-red-50">
+            <CardContent className="pt-6">
+              <p className="font-medium text-red-900">{prebookError}</p>
+              <p className="text-sm text-red-700 mt-1">Please return to the hotel page and try again.</p>
+            </CardContent>
+          </Card>
+        )}
+
+        {prebookData && !isExpired() && (
+          <Card className="mb-6 border-green-200 bg-green-50">
+            <CardContent className="pt-6">
+              <div className="flex items-center gap-3">
+                <ShieldCheck className="h-5 w-5 text-green-600" />
+                <div>
+                  <p className="font-medium text-green-900">Rate reserved successfully!</p>
+                  <p className="text-sm text-green-700">Your rate is secured for the next 10 minutes.</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Booking Form */}

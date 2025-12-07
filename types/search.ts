@@ -24,8 +24,8 @@ export interface SearchFilters {
   starRating: number[];
   amenities: string[];
   boardType: string[];
-  cancellationPolicy?: "refundable" | "non-refundable";
-  transferType?: string[];
+  cancellationPolicy: string[];
+  transferType: string[];
   popularTags?: string[];
 }
 

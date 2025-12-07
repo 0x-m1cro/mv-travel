@@ -23,6 +23,8 @@ function HotelsContent() {
     starRating: [],
     amenities: [],
     boardType: [],
+    cancellationPolicy: [],
+    transferType: [],
   });
 
   const fetchHotels = useCallback(async () => {
@@ -149,7 +151,9 @@ function HotelsContent() {
     return (
       activeFilters.starRating.length +
       activeFilters.amenities.length +
-      activeFilters.boardType.length
+      activeFilters.boardType.length +
+      activeFilters.cancellationPolicy.length +
+      activeFilters.transferType.length
     );
   }, [activeFilters]);
 

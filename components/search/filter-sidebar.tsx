@@ -17,6 +17,8 @@ export interface Filters {
   starRating: number[];
   amenities: string[];
   boardType: string[];
+  cancellationPolicy: string[];
+  transferType: string[];
 }
 
 const amenitiesList = [
@@ -40,12 +42,27 @@ const boardTypes = [
   { value: "all-inclusive", label: "All Inclusive" },
 ];
 
+const cancellationPolicies = [
+  { value: "refundable", label: "Free Cancellation" },
+  { value: "non-refundable", label: "Non-Refundable" },
+  { value: "partial-refund", label: "Partial Refund" },
+];
+
+const transferTypes = [
+  { value: "speedboat", label: "Speedboat Transfer" },
+  { value: "seaplane", label: "Seaplane Transfer" },
+  { value: "domestic-flight", label: "Domestic Flight" },
+  { value: "no-transfer", label: "No Transfer Needed" },
+];
+
 export function FilterSidebar({ onFilterChange, className }: FilterSidebarProps) {
   const [filters, setFilters] = useState<Filters>({
     priceRange: [0, 5000],
     starRating: [],
     amenities: [],
     boardType: [],
+    cancellationPolicy: [],
+    transferType: [],
   });
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -72,12 +89,14 @@ export function FilterSidebar({ onFilterChange, className }: FilterSidebarProps)
       starRating: [],
       amenities: [],
       boardType: [],
+      cancellationPolicy: [],
+      transferType: [],
     };
     setFilters(defaultFilters);
     onFilterChange?.(defaultFilters);
   };
 
-  const activeFiltersCount = filters.starRating.length + filters.amenities.length + filters.boardType.length;
+  const activeFiltersCount = filters.starRating.length + filters.amenities.length + filters.boardType.length + filters.cancellationPolicy.length + filters.transferType.length;
 
   return (
     <div className={cn("bg-white rounded-2xl shadow-lg border border-border/50 p-5", className)}>
@@ -211,6 +230,66 @@ export function FilterSidebar({ onFilterChange, className }: FilterSidebarProps)
                   )}
                 </div>
                 <span className="text-sm text-gray-700 group-hover:text-gray-900 transition-colors">{board.label}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <Separator className="bg-border/60" />
+
+        {/* Cancellation Policy */}
+        <div className="space-y-4">
+          <Label className="text-sm font-semibold text-gray-900">Cancellation Policy</Label>
+          <div className="space-y-2">
+            {cancellationPolicies.map((policy) => (
+              <label
+                key={policy.value}
+                className="flex items-center gap-3 cursor-pointer group py-1"
+              >
+                <div
+                  className={cn(
+                    "h-5 w-5 rounded-md border-2 flex items-center justify-center transition-all duration-200",
+                    filters.cancellationPolicy.includes(policy.value)
+                      ? "bg-primary border-primary"
+                      : "border-gray-300 group-hover:border-primary/50"
+                  )}
+                  onClick={() => toggleArrayFilter("cancellationPolicy", policy.value)}
+                >
+                  {filters.cancellationPolicy.includes(policy.value) && (
+                    <Check className="h-3.5 w-3.5 text-white" />
+                  )}
+                </div>
+                <span className="text-sm text-gray-700 group-hover:text-gray-900 transition-colors">{policy.label}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <Separator className="bg-border/60" />
+
+        {/* Transfer Type */}
+        <div className="space-y-4">
+          <Label className="text-sm font-semibold text-gray-900">Transfer Type</Label>
+          <div className="space-y-2">
+            {transferTypes.map((transfer) => (
+              <label
+                key={transfer.value}
+                className="flex items-center gap-3 cursor-pointer group py-1"
+              >
+                <div
+                  className={cn(
+                    "h-5 w-5 rounded-md border-2 flex items-center justify-center transition-all duration-200",
+                    filters.transferType.includes(transfer.value)
+                      ? "bg-primary border-primary"
+                      : "border-gray-300 group-hover:border-primary/50"
+                  )}
+                  onClick={() => toggleArrayFilter("transferType", transfer.value)}
+                >
+                  {filters.transferType.includes(transfer.value) && (
+                    <Check className="h-3.5 w-3.5 text-white" />
+                  )}
+                </div>
+                <span className="text-sm text-gray-700 group-hover:text-gray-900 transition-colors">{transfer.label}</span>
               </label>
             ))}
           </div>

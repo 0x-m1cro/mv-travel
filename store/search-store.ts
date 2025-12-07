@@ -39,6 +39,8 @@ const DEFAULT_FILTERS: SearchFilters = {
   starRating: [],
   amenities: [],
   boardType: [],
+  cancellationPolicy: [],
+  transferType: [],
 };
 
 const DEFAULT_SORT: SortOptions = {
