@@ -30,19 +30,39 @@ function HotelsContent() {
     setError(null);
 
     try {
-      const params = new URLSearchParams();
-      
+      const mode = searchParams.get("mode");
+      const vibeQuery = searchParams.get("q");
       const checkIn = searchParams.get("checkIn");
       const checkOut = searchParams.get("checkOut");
       const adults = searchParams.get("adults");
-      
-      if (checkIn) params.set("checkIn", checkIn);
-      if (checkOut) params.set("checkOut", checkOut);
-      if (adults) params.set("adults", adults);
-      params.set("limit", "50");
 
-      const response = await fetch(`/api/search?${params.toString()}`);
-      const result = await response.json();
+      let response;
+      let result;
+
+      if (mode === "vibe" && vibeQuery) {
+        // AI/Vibe search
+        response = await fetch("/api/ai-search", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            query: vibeQuery,
+            checkIn,
+            checkOut,
+            adults: adults ? parseInt(adults) : 2,
+          }),
+        });
+        result = await response.json();
+      } else {
+        // Regular search
+        const params = new URLSearchParams();
+        if (checkIn) params.set("checkIn", checkIn);
+        if (checkOut) params.set("checkOut", checkOut);
+        if (adults) params.set("adults", adults);
+        params.set("limit", "50");
+
+        response = await fetch(`/api/search?${params.toString()}`);
+        result = await response.json();
+      }
 
       if (result.success && result.data?.hotels) {
         setHotels(result.data.hotels);
