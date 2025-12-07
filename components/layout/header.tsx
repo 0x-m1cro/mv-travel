@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { Menu, X, User, Search } from "lucide-react";
+import { Menu, X, User, Search, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useWishlistStore } from "@/store";
 
 const navigation = [
   { name: "Hotels", href: "/hotels" },
@@ -17,8 +18,11 @@ const navigation = [
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const { items } = useWishlistStore();
 
   useEffect(() => {
+    setMounted(true);
     const handleScroll = () => {
       setScrolled(window.scrollY > 10);
     };
@@ -69,6 +73,17 @@ export function Header() {
               <Link href="/hotels">
                 <Search className="h-5 w-5 text-gray-600" />
                 <span className="sr-only">Search hotels</span>
+              </Link>
+            </Button>
+            <Button variant="ghost" size="icon" asChild className="rounded-xl hover:bg-primary/5 relative">
+              <Link href="/wishlist">
+                <Heart className={cn("h-5 w-5", mounted && items.length > 0 ? "fill-red-500 text-red-500" : "text-gray-600")} />
+                {mounted && items.length > 0 && (
+                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-semibold">
+                    {items.length}
+                  </span>
+                )}
+                <span className="sr-only">Wishlist</span>
               </Link>
             </Button>
             <Button variant="ghost" size="icon" asChild className="rounded-xl hover:bg-primary/5">

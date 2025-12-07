@@ -3,9 +3,10 @@
 import { useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Star, MapPin, Heart, ChevronLeft, ChevronRight } from "lucide-react";
+import { Star, MapPin, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Hotel } from "@/lib/liteapi/types";
+import { WishlistButton } from "@/components/shared";
 
 interface RecommendedCardProps {
   hotel: Hotel;
@@ -13,7 +14,6 @@ interface RecommendedCardProps {
 }
 
 export function RecommendedCard({ hotel, className }: RecommendedCardProps) {
-  const [isFavorite, setIsFavorite] = useState(false);
   const primaryImage = hotel.images?.find((img) => img.isPrimary)?.url || hotel.images?.[0]?.url;
 
   return (
@@ -34,21 +34,18 @@ export function RecommendedCard({ hotel, className }: RecommendedCardProps) {
             </div>
           )}
           
-          {/* Favorite Button */}
-          <button
-            onClick={(e) => {
-              e.preventDefault();
-              setIsFavorite(!isFavorite);
-            }}
-            className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center transition-transform hover:scale-110"
-          >
-            <Heart
-              className={cn(
-                "h-4 w-4 transition-colors",
-                isFavorite ? "fill-red-500 text-red-500" : "text-gray-600"
-              )}
+          {/* Wishlist Button */}
+          <div className="absolute top-3 right-3">
+            <WishlistButton
+              hotelId={hotel.id}
+              hotelName={hotel.name}
+              starRating={hotel.starRating}
+              location={hotel.address?.city}
+              image={primaryImage}
+              minRate={hotel.minRate}
+              className="w-8 h-8"
             />
-          </button>
+          </div>
 
           {/* Rating Badge */}
           {hotel.reviews && (
