@@ -92,8 +92,16 @@ export default function MapViewPage() {
                 <div className="absolute inset-0 p-8">
                   {hotels.slice(0, 20).map((hotel, index) => {
                     // Generate pseudo-random positions for demo
-                    const top = 20 + (index * 37) % 60;
-                    const left = 15 + (index * 43) % 70;
+                    // Position constants for map distribution
+                    const TOP_OFFSET = 20;
+                    const TOP_MULTIPLIER = 37;
+                    const TOP_RANGE = 60;
+                    const LEFT_OFFSET = 15;
+                    const LEFT_MULTIPLIER = 43;
+                    const LEFT_RANGE = 70;
+                    
+                    const top = TOP_OFFSET + (index * TOP_MULTIPLIER) % TOP_RANGE;
+                    const left = LEFT_OFFSET + (index * LEFT_MULTIPLIER) % LEFT_RANGE;
                     
                     return (
                       <button

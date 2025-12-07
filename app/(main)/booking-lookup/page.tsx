@@ -8,11 +8,24 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 
+interface BookingDetails {
+  bookingId: string;
+  hotelConfirmationCode?: string;
+  guestFirstName?: string;
+  guestLastName?: string;
+  guestEmail?: string;
+  hotelName?: string;
+  roomName?: string;
+  checkin?: string;
+  checkout?: string;
+  status?: string;
+}
+
 export default function BookingLookupPage() {
   const [bookingId, setBookingId] = useState("");
   const [email, setEmail] = useState("");
   const [isSearching, setIsSearching] = useState(false);
-  const [booking, setBooking] = useState<any>(null);
+  const [booking, setBooking] = useState<BookingDetails | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const handleSearch = async (e: React.FormEvent) => {
