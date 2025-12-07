@@ -6,7 +6,6 @@ import Link from "next/link";
 import { 
   Star, 
   MapPin, 
-  Heart, 
   SlidersHorizontal, 
   ChevronDown,
   Wifi,

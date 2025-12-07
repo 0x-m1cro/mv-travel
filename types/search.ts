@@ -35,7 +35,7 @@ export interface SortOptions {
 }
 
 export interface SearchResults {
-  hotels: any[]; // Using any for now, will be Hotel type from liteapi
+  hotels: unknown[]; // Hotel type from liteapi - using unknown for type safety
   totalCount: number;
   page: number;
   pageSize: number;

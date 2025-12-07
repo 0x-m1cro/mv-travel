@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { WishlistItem, WishlistState } from "@/types";
+import type { WishlistItem, WishlistState } from "@/types";
 
 export const useWishlistStore = create<WishlistState>()(
   persist(
